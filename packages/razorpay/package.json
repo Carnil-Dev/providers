@@ -1,0 +1,63 @@
+{
+  "name": "@carnil/razorpay",
+  "version": "0.1.0",
+  "description": "Razorpay provider for Carnil Payments SDK",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@carnil/core": "workspace:*",
+    "razorpay": "^2.9.2"
+  },
+  "keywords": [
+    "payments",
+    "razorpay",
+    "sdk",
+    "typescript"
+  ],
+  "author": {
+    "name": "Carnil Team",
+    "email": "hello@carnil.com",
+    "url": "https://carnil.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carnil/carnil-sdk.git",
+    "directory": "packages/razorpay"
+  },
+  "bugs": {
+    "url": "https://github.com/carnil/carnil-sdk/issues"
+  },
+  "homepage": "https://carnil.com",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^7.2.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  }
+}
