@@ -24,7 +24,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@carnil/core": "workspace:*",
+    "@carnil/core": "^0.1.0",
     "stripe": "^14.7.0"
   },
   "keywords": [

@@ -24,7 +24,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@carnil/core": "workspace:*",
+    "@carnil/core": "^0.1.0",
     "razorpay": "^2.9.2"
   },
   "keywords": [
