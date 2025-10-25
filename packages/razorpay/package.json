@@ -1,6 +1,6 @@
 {
   "name": "@carnil/razorpay",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Razorpay provider for Carnil Payments SDK",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -24,7 +24,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@carnil/core": "^0.1.0",
+    "@carnil/core": "^0.1.1",
     "razorpay": "^2.9.2"
   },
   "keywords": [
