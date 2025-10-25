@@ -27,8 +27,10 @@ export type {
   WebhookEvent,
   UsageMetrics,
   AIUsageMetrics,
-  ProviderConfig,
 } from '@carnil/core';
+
+// Import ProviderConfig separately
+import type { ProviderConfig } from '@carnil/core';
 
 // Provider factory function
 export function createStripeProvider(config: ProviderConfig) {

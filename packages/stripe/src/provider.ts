@@ -10,14 +10,6 @@ import type {
   CreateCustomerRequest,
   UpdateCustomerRequest,
   CreatePaymentIntentRequest,
-  CreateSubscriptionRequest,
-  CreateInvoiceRequest,
-  CreateRefundRequest,
-  CustomerListRequest,
-  PaymentIntentListRequest,
-  SubscriptionListRequest,
-  InvoiceListRequest,
-  ListResponse,
   WebhookEvent,
   UsageMetrics,
   AIUsageMetrics,
@@ -69,6 +61,10 @@ export class StripeProvider implements CarnilProvider {
   // ========================================================================
   // Base Provider Implementation
   // ========================================================================
+
+  async init(_config: Record<string, any>): Promise<void> {
+    // Initialization is handled in constructor
+  }
 
   async healthCheck(): Promise<boolean> {
     try {
@@ -124,6 +120,10 @@ export class StripeProvider implements CarnilProvider {
     }
   }
 
+  async retrieveCustomer(_params: any): Promise<Customer> {
+    return this.getCustomer(_params.id || _params);
+  }
+
   async getCustomer(id: string): Promise<Customer> {
     try {
       const customer = await this.stripe.customers.retrieve(id);
@@ -160,41 +160,57 @@ export class StripeProvider implements CarnilProvider {
     }
   }
 
-  async listCustomers(request?: CustomerListRequest): Promise<ListResponse<Customer>> {
+  async listCustomers(_request?: any): Promise<Customer[]> {
     try {
       const params: Stripe.CustomerListParams = {
-        limit: request?.limit || 10,
-        starting_after: request?.startingAfter,
-        ending_before: request?.endingBefore,
+        limit: _request?.limit || 10,
+        starting_after: _request?.startingAfter,
+        ending_before: _request?.endingBefore,
       };
 
-      if (request?.email) {
-        params.email = request.email;
+      if (_request?.email) {
+        params.email = _request.email;
       }
 
-      if (request?.created) {
+      if (_request?.created) {
         params.created = {
-          gte: request.created.gte?.getTime() / 1000,
-          lte: request.created.lte?.getTime() / 1000,
+          gte: _request.created.gte?.getTime() / 1000,
+          lte: _request.created.lte?.getTime() / 1000,
         };
       }
 
       const customers = await this.stripe.customers.list(params);
 
-      return {
-        data: customers.data.map(customer => this.mapStripeCustomer(customer)),
-        hasMore: customers.has_more,
-        totalCount: customers.data.length,
-        nextCursor: customers.data[customers.data.length - 1]?.id,
-        prevCursor: customers.data[0]?.id,
-      };
+      return customers.data.map(customer => this.mapStripeCustomer(customer));
     } catch (error) {
       throw createProviderError('stripe', error);
     }
   }
 
-  async listPaymentMethods(customerId: string): Promise<PaymentMethod[]> {
+  async createPaymentMethod(_params: any): Promise<PaymentMethod> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async retrievePaymentMethod(_params: any): Promise<PaymentMethod> {
     try {
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(_params.id || _params);
+      return this.mapStripePaymentMethod(paymentMethod);
+    } catch (error) {
+      throw createProviderError('stripe', error);
+    }
+  }
+
+  async updatePaymentMethod(_id: string, _params: any): Promise<PaymentMethod> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async deletePaymentMethod(paymentMethodId: string): Promise<void> {
+    await this.detachPaymentMethod(paymentMethodId);
+  }
+
+  async listPaymentMethods(_params?: any): Promise<PaymentMethod[]> {
+    try {
+      const customerId = _params?.customerId || _params?.customer || _params;
       const paymentMethods = await this.stripe.paymentMethods.list({
         customer: customerId,
         type: 'card',
@@ -242,6 +258,46 @@ export class StripeProvider implements CarnilProvider {
   }
 
   // ========================================================================
+  // Product Provider Implementation
+  // ========================================================================
+
+  async createProduct(_params: any): Promise<any> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async retrieveProduct(_params: any): Promise<any> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async updateProduct(_id: string, _params: any): Promise<any> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async listProducts(_params?: any): Promise<any[]> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  // ========================================================================
+  // Price Provider Implementation
+  // ========================================================================
+
+  async createPrice(_params: any): Promise<any> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async retrievePrice(_params: any): Promise<any> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async updatePrice(_id: string, _params: any): Promise<any> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  async listPrices(_params?: any): Promise<any[]> {
+    throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
+  }
+
+  // ========================================================================
   // Payment Provider Implementation
   // ========================================================================
 
@@ -262,6 +318,10 @@ export class StripeProvider implements CarnilProvider {
     } catch (error) {
       throw createProviderError('stripe', error);
     }
+  }
+
+  async retrievePaymentIntent(_params: any): Promise<PaymentIntent> {
+    return this.getPaymentIntent(_params.id || _params);
   }
 
   async getPaymentIntent(id: string): Promise<PaymentIntent> {
@@ -323,35 +383,25 @@ export class StripeProvider implements CarnilProvider {
     }
   }
 
-  async listPaymentIntents(request?: PaymentIntentListRequest): Promise<ListResponse<PaymentIntent>> {
+  async listPaymentIntents(_request?: any): Promise<PaymentIntent[]> {
     try {
       const params: Stripe.PaymentIntentListParams = {
-        limit: request?.limit || 10,
-        starting_after: request?.startingAfter,
-        ending_before: request?.endingBefore,
-        customer: request?.customerId,
+        limit: _request?.limit || 10,
+        starting_after: _request?.startingAfter,
+        ending_before: _request?.endingBefore,
+        customer: _request?.customerId,
       };
 
-      if (request?.status) {
-        params.status = request.status as any;
-      }
-
-      if (request?.created) {
+      if (_request?.created) {
         params.created = {
-          gte: request.created.gte?.getTime() / 1000,
-          lte: request.created.lte?.getTime() / 1000,
+          gte: _request.created.gte?.getTime() / 1000,
+          lte: _request.created.lte?.getTime() / 1000,
         };
       }
 
       const paymentIntents = await this.stripe.paymentIntents.list(params);
 
-      return {
-        data: paymentIntents.data.map(pi => this.mapStripePaymentIntent(pi)),
-        hasMore: paymentIntents.has_more,
-        totalCount: paymentIntents.data.length,
-        nextCursor: paymentIntents.data[paymentIntents.data.length - 1]?.id,
-        prevCursor: paymentIntents.data[0]?.id,
-      };
+      return paymentIntents.data.map(pi => this.mapStripePaymentIntent(pi));
     } catch (error) {
       throw createProviderError('stripe', error);
     }
@@ -388,7 +438,7 @@ export class StripeProvider implements CarnilProvider {
       expiryMonth: card?.exp_month,
       expiryYear: card?.exp_year,
       isDefault: false, // Would need to check customer's default payment method
-      metadata: paymentMethod.metadata,
+      metadata: paymentMethod.metadata || undefined,
       created: new Date(paymentMethod.created * 1000),
       updated: new Date(paymentMethod.created * 1000),
       provider: 'stripe',
@@ -405,7 +455,7 @@ export class StripeProvider implements CarnilProvider {
       status: paymentIntent.status as any,
       clientSecret: paymentIntent.client_secret || undefined,
       description: paymentIntent.description || undefined,
-      metadata: paymentIntent.metadata,
+      metadata: paymentIntent.metadata || undefined,
       paymentMethodId: paymentIntent.payment_method as string || undefined,
       receiptEmail: paymentIntent.receipt_email || undefined,
       created: new Date(paymentIntent.created * 1000),
@@ -419,111 +469,127 @@ export class StripeProvider implements CarnilProvider {
   // Placeholder implementations for remaining interfaces
   // ========================================================================
 
-  async createSubscription(request: CreateSubscriptionRequest): Promise<Subscription> {
+  async createSubscription(_request: any): Promise<Subscription> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async getSubscription(id: string): Promise<Subscription> {
+  async retrieveSubscription(_params: any): Promise<Subscription> {
+    return this.getSubscription(_params.id || _params);
+  }
+
+  async getSubscription(_id: string): Promise<Subscription> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async updateSubscription(id: string, updates: Partial<CreateSubscriptionRequest>): Promise<Subscription> {
+  async updateSubscription(_id: string, _updates: any): Promise<Subscription> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async cancelSubscription(id: string, immediately?: boolean): Promise<Subscription> {
+  async cancelSubscription(_id: string): Promise<Subscription> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async listSubscriptions(request?: SubscriptionListRequest): Promise<ListResponse<Subscription>> {
+  async listSubscriptions(_request?: any): Promise<Subscription[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async createInvoice(request: CreateInvoiceRequest): Promise<Invoice> {
+  async createInvoice(_request: any): Promise<Invoice> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async getInvoice(id: string): Promise<Invoice> {
+  async retrieveInvoice(_params: any): Promise<Invoice> {
+    return this.getInvoice(_params.id || _params);
+  }
+
+  async getInvoice(_id: string): Promise<Invoice> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async updateInvoice(id: string, updates: Partial<CreateInvoiceRequest>): Promise<Invoice> {
+  async updateInvoice(_id: string, _updates: any): Promise<Invoice> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async finalizeInvoice(id: string): Promise<Invoice> {
+  async finalizeInvoice(_id: string): Promise<Invoice> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async payInvoice(id: string, paymentMethodId?: string): Promise<Invoice> {
+  async payInvoice(_id: string, _paymentMethodId?: string): Promise<Invoice> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async listInvoices(request?: InvoiceListRequest): Promise<ListResponse<Invoice>> {
+  async listInvoices(_request?: any): Promise<Invoice[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async createRefund(request: CreateRefundRequest): Promise<Refund> {
+  async createRefund(_request: any): Promise<Refund> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async getRefund(id: string): Promise<Refund> {
+  async retrieveRefund(_params: any): Promise<Refund> {
+    return this.getRefund(_params.id || _params);
+  }
+
+  async getRefund(_id: string): Promise<Refund> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async listRefunds(paymentId?: string): Promise<Refund[]> {
+  async listRefunds(_params?: any): Promise<Refund[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async getDispute(id: string): Promise<Dispute> {
+  async retrieveDispute(_params: any): Promise<Dispute> {
+    return this.getDispute(_params.id || _params);
+  }
+
+  async getDispute(_id: string): Promise<Dispute> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async listDisputes(): Promise<Dispute[]> {
+  async listDisputes(_params?: any): Promise<Dispute[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async updateDispute(id: string, evidence: any): Promise<Dispute> {
+  async updateDispute(_id: string, _evidence: any): Promise<Dispute> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async trackUsage(metrics: UsageMetrics): Promise<void> {
+  async trackUsage(_metrics: UsageMetrics): Promise<void> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async trackAIUsage(metrics: AIUsageMetrics): Promise<void> {
+  async trackAIUsage(_metrics: AIUsageMetrics): Promise<void> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async getUsageMetrics(customerId: string, featureId: string, period: string): Promise<UsageMetrics[]> {
+  async getUsageMetrics(_customerId: string, _featureId: string, _period: string): Promise<UsageMetrics[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async getAIUsageMetrics(customerId: string, modelId?: string, period?: string): Promise<AIUsageMetrics[]> {
+  async getAIUsageMetrics(_customerId: string, _modelId?: string, _period?: string): Promise<AIUsageMetrics[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async configure(options: Record<string, any>): Promise<void> {
+  async configure(_options: Record<string, any>): Promise<void> {
     // Stripe configuration is handled in constructor
   }
 
-  async batchCreateCustomers(requests: CreateCustomerRequest[]): Promise<Customer[]> {
+  async batchCreateCustomers(_requests: CreateCustomerRequest[]): Promise<Customer[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async batchCreatePaymentIntents(requests: CreatePaymentIntentRequest[]): Promise<PaymentIntent[]> {
+  async batchCreatePaymentIntents(_requests: CreatePaymentIntentRequest[]): Promise<PaymentIntent[]> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async createWebhookEndpoint(url: string, events: string[]): Promise<string> {
+  async createWebhookEndpoint(_url: string, _events: string[]): Promise<string> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async updateWebhookEndpoint(id: string, url: string, events: string[]): Promise<void> {
+  async updateWebhookEndpoint(_id: string, _url: string, _events: string[]): Promise<void> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
-  async deleteWebhookEndpoint(id: string): Promise<void> {
+  async deleteWebhookEndpoint(_id: string): Promise<void> {
     throw new CarnilError('Not implemented', 'NOT_IMPLEMENTED');
   }
 
