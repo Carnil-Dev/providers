@@ -47,7 +47,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@carnil/core": "workspace:*",
+    "@carnil/core": "latest",
     "razorpay": "^2.9.2"
   },
   "peerDependencies": {
