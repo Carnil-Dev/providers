@@ -40,11 +40,11 @@ jobs:
       - name: Version and Publish
         run: |
           # Version packages based on changesets
-          pnpm run version:patch
-
+          pnpm -w run version:patch
+          
           # Publish to npm
-          pnpm run release
-
+          pnpm -w run release
+          
           # Commit and push the version bump
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
