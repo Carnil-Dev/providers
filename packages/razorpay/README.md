@@ -31,34 +31,34 @@ npm install razorpay@^2.9.0
 ## Quick Start
 
 ```typescript
-import { RazorpayProvider } from '@carnil/razorpay';
-import { Carnil } from '@carnil/core';
+import { RazorpayProvider } from "@carnil/razorpay";
+import { Carnil } from "@carnil/core";
 
 // Register the Razorpay provider
-Carnil.registerProvider('razorpay', RazorpayProvider);
+Carnil.registerProvider("razorpay", RazorpayProvider);
 
 // Initialize Carnil with Razorpay
 const carnil = new Carnil({
   provider: {
-    provider: 'razorpay',
-    keyId: 'rzp_test_...',
-    keySecret: 'your_key_secret',
-    webhookSecret: 'your_webhook_secret'
+    provider: "razorpay",
+    keyId: "rzp_test_...",
+    keySecret: "your_key_secret",
+    webhookSecret: "your_webhook_secret",
   },
-  debug: true
+  debug: true,
 });
 
 // Create a customer
 const customer = await carnil.createCustomer({
-  email: 'customer@example.com',
-  name: 'John Doe'
+  email: "customer@example.com",
+  name: "John Doe",
 });
 
 // Create a payment intent
 const paymentIntent = await carnil.createPaymentIntent({
   amount: 200000, // ₹2000.00 (amount in paise)
-  currency: 'INR',
-  customerId: customer.data.id
+  currency: "INR",
+  customerId: customer.data.id,
 });
 ```
 
@@ -69,59 +69,101 @@ const paymentIntent = await carnil.createPaymentIntent({
 ```typescript
 class RazorpayProvider implements CarnilProvider {
   constructor(config: RazorpayConfig);
-  
+
   // Customer operations
   createCustomer(request: CreateCustomerRequest): Promise<Customer>;
   retrieveCustomer(request: RetrieveCustomerRequest): Promise<Customer>;
   updateCustomer(id: string, request: UpdateCustomerRequest): Promise<Customer>;
   deleteCustomer(id: string): Promise<void>;
   listCustomers(request?: CustomerListRequest): Promise<ListResponse<Customer>>;
-  
+
   // Payment method operations
-  listPaymentMethods(request: ListPaymentMethodsRequest): Promise<PaymentMethod[]>;
-  attachPaymentMethod(customerId: string, paymentMethodId: string): Promise<PaymentMethod>;
+  listPaymentMethods(
+    request: ListPaymentMethodsRequest
+  ): Promise<PaymentMethod[]>;
+  attachPaymentMethod(
+    customerId: string,
+    paymentMethodId: string
+  ): Promise<PaymentMethod>;
   detachPaymentMethod(paymentMethodId: string): Promise<void>;
-  setDefaultPaymentMethod(customerId: string, paymentMethodId: string): Promise<PaymentMethod>;
-  
+  setDefaultPaymentMethod(
+    customerId: string,
+    paymentMethodId: string
+  ): Promise<PaymentMethod>;
+
   // Payment intent operations
-  createPaymentIntent(request: CreatePaymentIntentRequest): Promise<PaymentIntent>;
+  createPaymentIntent(
+    request: CreatePaymentIntentRequest
+  ): Promise<PaymentIntent>;
   getPaymentIntent(id: string): Promise<PaymentIntent>;
-  updatePaymentIntent(id: string, updates: Partial<CreatePaymentIntentRequest>): Promise<PaymentIntent>;
+  updatePaymentIntent(
+    id: string,
+    updates: Partial<CreatePaymentIntentRequest>
+  ): Promise<PaymentIntent>;
   cancelPaymentIntent(id: string): Promise<PaymentIntent>;
-  confirmPaymentIntent(id: string, paymentMethodId?: string): Promise<PaymentIntent>;
+  confirmPaymentIntent(
+    id: string,
+    paymentMethodId?: string
+  ): Promise<PaymentIntent>;
   capturePaymentIntent(id: string, amount?: number): Promise<PaymentIntent>;
-  listPaymentIntents(request?: PaymentIntentListRequest): Promise<ListResponse<PaymentIntent>>;
-  
+  listPaymentIntents(
+    request?: PaymentIntentListRequest
+  ): Promise<ListResponse<PaymentIntent>>;
+
   // Subscription operations
   createSubscription(request: CreateSubscriptionRequest): Promise<Subscription>;
   getSubscription(id: string): Promise<Subscription>;
-  updateSubscription(id: string, updates: Partial<CreateSubscriptionRequest>): Promise<Subscription>;
+  updateSubscription(
+    id: string,
+    updates: Partial<CreateSubscriptionRequest>
+  ): Promise<Subscription>;
   cancelSubscription(id: string): Promise<Subscription>;
-  listSubscriptions(request?: SubscriptionListRequest): Promise<ListResponse<Subscription>>;
-  
+  listSubscriptions(
+    request?: SubscriptionListRequest
+  ): Promise<ListResponse<Subscription>>;
+
   // Invoice operations
   createInvoice(request: CreateInvoiceRequest): Promise<Invoice>;
   getInvoice(id: string): Promise<Invoice>;
-  updateInvoice(id: string, updates: Partial<CreateInvoiceRequest>): Promise<Invoice>;
+  updateInvoice(
+    id: string,
+    updates: Partial<CreateInvoiceRequest>
+  ): Promise<Invoice>;
   finalizeInvoice(id: string): Promise<Invoice>;
   payInvoice(id: string, paymentMethodId?: string): Promise<Invoice>;
   listInvoices(request?: InvoiceListRequest): Promise<ListResponse<Invoice>>;
-  
+
   // Refund operations
   createRefund(request: CreateRefundRequest): Promise<Refund>;
   getRefund(id: string): Promise<Refund>;
   listRefunds(request: ListRefundsRequest): Promise<Refund[]>;
-  
+
   // Webhook operations
-  verifyWebhook(payload: string, signature: string, secret: string): Promise<boolean>;
-  parseWebhook(payload: string, signature: string, secret: string): Promise<WebhookEvent>;
-  
+  verifyWebhook(
+    payload: string,
+    signature: string,
+    secret: string
+  ): Promise<boolean>;
+  parseWebhook(
+    payload: string,
+    signature: string,
+    secret: string
+  ): Promise<WebhookEvent>;
+
   // Analytics operations
   trackUsage(metrics: UsageMetrics): Promise<void>;
   trackAIUsage(metrics: AIUsageMetrics): Promise<void>;
-  getUsageMetrics(customerId: string, featureId: string, period: string): Promise<UsageMetrics[]>;
-  getAIUsageMetrics(customerId: string, modelId?: string, period?: string): Promise<AIUsageMetrics[]>;
-  
+  getUsageMetrics(
+    customerId: string,
+    featureId: string,
+    period: string
+  ): Promise<UsageMetrics[]>;
+  getAIUsageMetrics(
+    customerId: string,
+    modelId?: string,
+    period?: string
+  ): Promise<AIUsageMetrics[]>;
+
   // Health check
   healthCheck(): Promise<boolean>;
 }
@@ -136,7 +178,7 @@ interface RazorpayConfig {
   keyId: string;
   keySecret: string;
   webhookSecret?: string;
-  environment?: 'test' | 'live';
+  environment?: "test" | "live";
 }
 ```
 
@@ -159,50 +201,50 @@ RAZORPAY_WEBHOOK_SECRET=your_live_webhook_secret
 ### Creating Customers
 
 ```typescript
-import { RazorpayProvider } from '@carnil/razorpay';
+import { RazorpayProvider } from "@carnil/razorpay";
 
 const razorpayProvider = new RazorpayProvider({
   keyId: process.env.RAZORPAY_KEY_ID!,
-  keySecret: process.env.RAZORPAY_KEY_SECRET!
+  keySecret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
 // Create a customer
 const customer = await razorpayProvider.createCustomer({
-  email: 'customer@example.com',
-  name: 'John Doe',
-  contact: '+919876543210',
+  email: "customer@example.com",
+  name: "John Doe",
+  contact: "+919876543210",
   metadata: {
-    source: 'website',
-    plan: 'premium'
-  }
+    source: "website",
+    plan: "premium",
+  },
 });
 
-console.log('Customer created:', customer.id);
+console.log("Customer created:", customer.id);
 ```
 
 ### Managing Customers
 
 ```typescript
 // Get customer
-const customer = await razorpayProvider.retrieveCustomer({ id: 'cust_123' });
+const customer = await razorpayProvider.retrieveCustomer({ id: "cust_123" });
 
 // Update customer
-const updatedCustomer = await razorpayProvider.updateCustomer('cust_123', {
-  name: 'Jane Doe',
-  contact: '+919876543211',
+const updatedCustomer = await razorpayProvider.updateCustomer("cust_123", {
+  name: "Jane Doe",
+  contact: "+919876543211",
   metadata: {
-    plan: 'enterprise'
-  }
+    plan: "enterprise",
+  },
 });
 
 // List customers
 const customers = await razorpayProvider.listCustomers({
   limit: 10,
-  email: 'customer@example.com'
+  email: "customer@example.com",
 });
 
 // Delete customer
-await razorpayProvider.deleteCustomer('cust_123');
+await razorpayProvider.deleteCustomer("cust_123");
 ```
 
 ## Payment Processing
@@ -213,38 +255,52 @@ await razorpayProvider.deleteCustomer('cust_123');
 // Create payment intent
 const paymentIntent = await razorpayProvider.createPaymentIntent({
   amount: 200000, // ₹2000.00 (amount in paise)
-  currency: 'INR',
-  customerId: 'cust_123',
-  paymentMethodId: 'pm_123',
+  currency: "INR",
+  customerId: "cust_123",
+  paymentMethodId: "pm_123",
   notes: {
-    orderId: 'order_123'
-  }
+    orderId: "order_123",
+  },
 });
 
 // Confirm payment intent
-const confirmedIntent = await razorpayProvider.confirmPaymentIntent('pay_123', 'pm_123');
+const confirmedIntent = await razorpayProvider.confirmPaymentIntent(
+  "pay_123",
+  "pm_123"
+);
 
 // Capture payment intent
-const capturedIntent = await razorpayProvider.capturePaymentIntent('pay_123', 200000);
+const capturedIntent = await razorpayProvider.capturePaymentIntent(
+  "pay_123",
+  200000
+);
 
 // Cancel payment intent
-const cancelledIntent = await razorpayProvider.cancelPaymentIntent('pay_123');
+const cancelledIntent = await razorpayProvider.cancelPaymentIntent("pay_123");
 ```
 
 ### Payment Methods
 
 ```typescript
 // List payment methods
-const paymentMethods = await razorpayProvider.listPaymentMethods({ customerId: 'cust_123' });
+const paymentMethods = await razorpayProvider.listPaymentMethods({
+  customerId: "cust_123",
+});
 
 // Attach payment method
-const paymentMethod = await razorpayProvider.attachPaymentMethod('cust_123', 'pm_123');
+const paymentMethod = await razorpayProvider.attachPaymentMethod(
+  "cust_123",
+  "pm_123"
+);
 
 // Set default payment method
-const defaultMethod = await razorpayProvider.setDefaultPaymentMethod('cust_123', 'pm_123');
+const defaultMethod = await razorpayProvider.setDefaultPaymentMethod(
+  "cust_123",
+  "pm_123"
+);
 
 // Detach payment method
-await razorpayProvider.detachPaymentMethod('pm_123');
+await razorpayProvider.detachPaymentMethod("pm_123");
 ```
 
 ## Subscriptions
@@ -254,38 +310,43 @@ await razorpayProvider.detachPaymentMethod('pm_123');
 ```typescript
 // Create subscription
 const subscription = await razorpayProvider.createSubscription({
-  customerId: 'cust_123',
-  planId: 'plan_123',
-  paymentMethodId: 'pm_123',
+  customerId: "cust_123",
+  planId: "plan_123",
+  paymentMethodId: "pm_123",
   notes: {
-    plan: 'premium'
-  }
+    plan: "premium",
+  },
 });
 
-console.log('Subscription created:', subscription.id);
+console.log("Subscription created:", subscription.id);
 ```
 
 ### Managing Subscriptions
 
 ```typescript
 // Get subscription
-const subscription = await razorpayProvider.getSubscription('sub_123');
+const subscription = await razorpayProvider.getSubscription("sub_123");
 
 // Update subscription
-const updatedSubscription = await razorpayProvider.updateSubscription('sub_123', {
-  planId: 'plan_456',
-  notes: {
-    plan: 'enterprise'
+const updatedSubscription = await razorpayProvider.updateSubscription(
+  "sub_123",
+  {
+    planId: "plan_456",
+    notes: {
+      plan: "enterprise",
+    },
   }
-});
+);
 
 // Cancel subscription
-const cancelledSubscription = await razorpayProvider.cancelSubscription('sub_123');
+const cancelledSubscription = await razorpayProvider.cancelSubscription(
+  "sub_123"
+);
 
 // List subscriptions
 const subscriptions = await razorpayProvider.listSubscriptions({
-  customerId: 'cust_123',
-  status: 'active'
+  customerId: "cust_123",
+  status: "active",
 });
 ```
 
@@ -296,30 +357,30 @@ const subscriptions = await razorpayProvider.listSubscriptions({
 ```typescript
 // Create invoice
 const invoice = await razorpayProvider.createInvoice({
-  customerId: 'cust_123',
+  customerId: "cust_123",
   items: [
     {
-      name: 'Premium Plan',
+      name: "Premium Plan",
       amount: 200000,
-      currency: 'INR',
-      quantity: 1
-    }
+      currency: "INR",
+      quantity: 1,
+    },
   ],
   notes: {
-    orderId: 'order_123'
-  }
+    orderId: "order_123",
+  },
 });
 
 // Finalize invoice
-const finalizedInvoice = await razorpayProvider.finalizeInvoice('inv_123');
+const finalizedInvoice = await razorpayProvider.finalizeInvoice("inv_123");
 
 // Pay invoice
-const paidInvoice = await razorpayProvider.payInvoice('inv_123', 'pm_123');
+const paidInvoice = await razorpayProvider.payInvoice("inv_123", "pm_123");
 
 // List invoices
 const invoices = await razorpayProvider.listInvoices({
-  customerId: 'cust_123',
-  status: 'paid'
+  customerId: "cust_123",
+  status: "paid",
 });
 ```
 
@@ -330,18 +391,18 @@ const invoices = await razorpayProvider.listInvoices({
 ```typescript
 // Create refund
 const refund = await razorpayProvider.createRefund({
-  paymentId: 'pay_123',
+  paymentId: "pay_123",
   amount: 100000, // ₹1000.00 (amount in paise)
   notes: {
-    reason: 'defective_product'
-  }
+    reason: "defective_product",
+  },
 });
 
 // Get refund
-const refundDetails = await razorpayProvider.getRefund('rfnd_123');
+const refundDetails = await razorpayProvider.getRefund("rfnd_123");
 
 // List refunds
-const refunds = await razorpayProvider.listRefunds({ paymentId: 'pay_123' });
+const refunds = await razorpayProvider.listRefunds({ paymentId: "pay_123" });
 ```
 
 ## Webhooks
@@ -349,113 +410,140 @@ const refunds = await razorpayProvider.listRefunds({ paymentId: 'pay_123' });
 ### Webhook Verification
 
 ```typescript
-import { RazorpayProvider } from '@carnil/razorpay';
+import { RazorpayProvider } from "@carnil/razorpay";
 
 const razorpayProvider = new RazorpayProvider({
   keyId: process.env.RAZORPAY_KEY_ID!,
   keySecret: process.env.RAZORPAY_KEY_SECRET!,
-  webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET!
+  webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET!,
 });
 
 // Verify webhook signature
-const isValid = await razorpayProvider.verifyWebhook(payload, signature, secret);
+const isValid = await razorpayProvider.verifyWebhook(
+  payload,
+  signature,
+  secret
+);
 if (isValid) {
-  console.log('Webhook signature is valid');
+  console.log("Webhook signature is valid");
 }
 
 // Parse webhook payload
 const event = await razorpayProvider.parseWebhook(payload, signature, secret);
-console.log('Webhook event:', event.type, event.data);
+console.log("Webhook event:", event.type, event.data);
 ```
 
 ### Express.js Webhook Handler
 
 ```typescript
-import express from 'express';
-import { RazorpayProvider } from '@carnil/razorpay';
+import express from "express";
+import { RazorpayProvider } from "@carnil/razorpay";
 
 const app = express();
 const razorpayProvider = new RazorpayProvider({
   keyId: process.env.RAZORPAY_KEY_ID!,
   keySecret: process.env.RAZORPAY_KEY_SECRET!,
-  webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET!
+  webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET!,
 });
 
-app.post('/webhooks/razorpay', express.raw({ type: 'application/json' }), async (req, res) => {
-  try {
-    const signature = req.headers['x-razorpay-signature'] as string;
-    const payload = req.body;
-    
-    // Verify webhook
-    const isValid = await razorpayProvider.verifyWebhook(payload, signature, process.env.RAZORPAY_WEBHOOK_SECRET!);
-    if (!isValid) {
-      return res.status(400).json({ error: 'Invalid signature' });
+app.post(
+  "/webhooks/razorpay",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    try {
+      const signature = req.headers["x-razorpay-signature"] as string;
+      const payload = req.body;
+
+      // Verify webhook
+      const isValid = await razorpayProvider.verifyWebhook(
+        payload,
+        signature,
+        process.env.RAZORPAY_WEBHOOK_SECRET!
+      );
+      if (!isValid) {
+        return res.status(400).json({ error: "Invalid signature" });
+      }
+
+      // Parse event
+      const event = await razorpayProvider.parseWebhook(
+        payload,
+        signature,
+        process.env.RAZORPAY_WEBHOOK_SECRET!
+      );
+
+      // Handle event
+      switch (event.type) {
+        case "payment.captured":
+          await handlePaymentCaptured(event.data);
+          break;
+        case "payment.failed":
+          await handlePaymentFailed(event.data);
+          break;
+        case "subscription.created":
+          await handleSubscriptionCreated(event.data);
+          break;
+        default:
+          console.log("Unhandled event type:", event.type);
+      }
+
+      res.status(200).json({ received: true });
+    } catch (error) {
+      console.error("Webhook error:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-    
-    // Parse event
-    const event = await razorpayProvider.parseWebhook(payload, signature, process.env.RAZORPAY_WEBHOOK_SECRET!);
-    
-    // Handle event
-    switch (event.type) {
-      case 'payment.captured':
-        await handlePaymentCaptured(event.data);
-        break;
-      case 'payment.failed':
-        await handlePaymentFailed(event.data);
-        break;
-      case 'subscription.created':
-        await handleSubscriptionCreated(event.data);
-        break;
-      default:
-        console.log('Unhandled event type:', event.type);
-    }
-    
-    res.status(200).json({ received: true });
-  } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-});
+);
 ```
 
 ### Next.js API Route
 
 ```typescript
 // pages/api/webhooks/razorpay.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import { RazorpayProvider } from '@carnil/razorpay';
+import { NextApiRequest, NextApiResponse } from "next";
+import { RazorpayProvider } from "@carnil/razorpay";
 
 const razorpayProvider = new RazorpayProvider({
   keyId: process.env.RAZORPAY_KEY_ID!,
   keySecret: process.env.RAZORPAY_KEY_SECRET!,
-  webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET!
+  webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET!,
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const signature = req.headers['x-razorpay-signature'] as string;
+    const signature = req.headers["x-razorpay-signature"] as string;
     const payload = JSON.stringify(req.body);
-    
+
     // Verify webhook
-    const isValid = await razorpayProvider.verifyWebhook(payload, signature, process.env.RAZORPAY_WEBHOOK_SECRET!);
+    const isValid = await razorpayProvider.verifyWebhook(
+      payload,
+      signature,
+      process.env.RAZORPAY_WEBHOOK_SECRET!
+    );
     if (!isValid) {
-      return res.status(400).json({ error: 'Invalid signature' });
+      return res.status(400).json({ error: "Invalid signature" });
     }
-    
+
     // Parse event
-    const event = await razorpayProvider.parseWebhook(payload, signature, process.env.RAZORPAY_WEBHOOK_SECRET!);
-    
+    const event = await razorpayProvider.parseWebhook(
+      payload,
+      signature,
+      process.env.RAZORPAY_WEBHOOK_SECRET!
+    );
+
     // Handle event
     await handleWebhookEvent(event);
-    
+
     res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Webhook error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 ```
@@ -467,25 +555,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 ```typescript
 // Track usage
 await razorpayProvider.trackUsage({
-  customerId: 'cust_123',
-  featureId: 'api_calls',
+  customerId: "cust_123",
+  featureId: "api_calls",
   usage: 100,
-  timestamp: new Date()
+  timestamp: new Date(),
 });
 
 // Track AI usage
 await razorpayProvider.trackAIUsage({
-  customerId: 'cust_123',
-  modelId: 'gpt-4',
+  customerId: "cust_123",
+  modelId: "gpt-4",
   tokens: 1000,
-  cost: 0.02
+  cost: 0.02,
 });
 
 // Get usage metrics
-const metrics = await razorpayProvider.getUsageMetrics('cust_123', 'api_calls', 'month');
+const metrics = await razorpayProvider.getUsageMetrics(
+  "cust_123",
+  "api_calls",
+  "month"
+);
 
 // Get AI usage metrics
-const aiMetrics = await razorpayProvider.getAIUsageMetrics('cust_123', 'gpt-4', 'month');
+const aiMetrics = await razorpayProvider.getAIUsageMetrics(
+  "cust_123",
+  "gpt-4",
+  "month"
+);
 ```
 
 ## Indian Payment Methods
@@ -496,12 +592,12 @@ const aiMetrics = await razorpayProvider.getAIUsageMetrics('cust_123', 'gpt-4', 
 // Create UPI payment intent
 const upiPaymentIntent = await razorpayProvider.createPaymentIntent({
   amount: 200000, // ₹2000.00
-  currency: 'INR',
-  method: 'upi',
-  customerId: 'cust_123',
+  currency: "INR",
+  method: "upi",
+  customerId: "cust_123",
   notes: {
-    upiId: 'customer@paytm'
-  }
+    upiId: "customer@paytm",
+  },
 });
 ```
 
@@ -511,12 +607,12 @@ const upiPaymentIntent = await razorpayProvider.createPaymentIntent({
 // Create net banking payment intent
 const netBankingPaymentIntent = await razorpayProvider.createPaymentIntent({
   amount: 200000, // ₹2000.00
-  currency: 'INR',
-  method: 'netbanking',
-  customerId: 'cust_123',
+  currency: "INR",
+  method: "netbanking",
+  customerId: "cust_123",
   notes: {
-    bank: 'HDFC'
-  }
+    bank: "HDFC",
+  },
 });
 ```
 
@@ -526,12 +622,12 @@ const netBankingPaymentIntent = await razorpayProvider.createPaymentIntent({
 // Create wallet payment intent
 const walletPaymentIntent = await razorpayProvider.createPaymentIntent({
   amount: 200000, // ₹2000.00
-  currency: 'INR',
-  method: 'wallet',
-  customerId: 'cust_123',
+  currency: "INR",
+  method: "wallet",
+  customerId: "cust_123",
   notes: {
-    wallet: 'paytm'
-  }
+    wallet: "paytm",
+  },
 });
 ```
 
@@ -540,22 +636,22 @@ const walletPaymentIntent = await razorpayProvider.createPaymentIntent({
 ### Razorpay-Specific Errors
 
 ```typescript
-import { RazorpayProvider } from '@carnil/razorpay';
+import { RazorpayProvider } from "@carnil/razorpay";
 
 try {
   const paymentIntent = await razorpayProvider.createPaymentIntent({
     amount: 200000,
-    currency: 'INR'
+    currency: "INR",
   });
 } catch (error) {
-  if (error.code === 'BAD_REQUEST_ERROR') {
-    console.error('Bad request:', error.message);
-  } else if (error.code === 'GATEWAY_ERROR') {
-    console.error('Gateway error:', error.message);
-  } else if (error.code === 'NETWORK_ERROR') {
-    console.error('Network error:', error.message);
+  if (error.code === "BAD_REQUEST_ERROR") {
+    console.error("Bad request:", error.message);
+  } else if (error.code === "GATEWAY_ERROR") {
+    console.error("Gateway error:", error.message);
+  } else if (error.code === "NETWORK_ERROR") {
+    console.error("Network error:", error.message);
   } else {
-    console.error('Unknown error:', error.message);
+    console.error("Unknown error:", error.message);
   }
 }
 ```
@@ -567,17 +663,17 @@ try {
 ```typescript
 // Use test credentials for testing
 const razorpayProvider = new RazorpayProvider({
-  keyId: 'rzp_test_...',
-  keySecret: 'test_key_secret',
-  webhookSecret: 'test_webhook_secret',
-  environment: 'test'
+  keyId: "rzp_test_...",
+  keySecret: "test_key_secret",
+  webhookSecret: "test_webhook_secret",
+  environment: "test",
 });
 
 // Test payment intent creation
 const testPaymentIntent = await razorpayProvider.createPaymentIntent({
   amount: 200000,
-  currency: 'INR',
-  method: 'card'
+  currency: "INR",
+  method: "card",
 });
 ```
 
@@ -586,23 +682,27 @@ const testPaymentIntent = await razorpayProvider.createPaymentIntent({
 ```typescript
 // Test webhook verification
 const testPayload = JSON.stringify({
-  entity: 'event',
-  account_id: 'acc_test',
-  event: 'payment.captured',
-  contains: ['payment'],
+  entity: "event",
+  account_id: "acc_test",
+  event: "payment.captured",
+  contains: ["payment"],
   payload: {
     payment: {
       entity: {
-        id: 'pay_test_123',
+        id: "pay_test_123",
         amount: 200000,
-        currency: 'INR'
-      }
-    }
-  }
+        currency: "INR",
+      },
+    },
+  },
 });
 
-const testSignature = 'test_signature';
-const isValid = await razorpayProvider.verifyWebhook(testPayload, testSignature, 'test_webhook_secret');
+const testSignature = "test_signature";
+const isValid = await razorpayProvider.verifyWebhook(
+  testPayload,
+  testSignature,
+  "test_webhook_secret"
+);
 ```
 
 ## Health Check
@@ -611,9 +711,9 @@ const isValid = await razorpayProvider.verifyWebhook(testPayload, testSignature,
 // Check Razorpay API health
 const isHealthy = await razorpayProvider.healthCheck();
 if (isHealthy) {
-  console.log('Razorpay API is healthy');
+  console.log("Razorpay API is healthy");
 } else {
-  console.log('Razorpay API is not responding');
+  console.log("Razorpay API is not responding");
 }
 ```
 

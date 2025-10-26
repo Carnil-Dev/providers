@@ -31,33 +31,33 @@ npm install stripe@^14.0.0
 ## Quick Start
 
 ```typescript
-import { StripeProvider } from '@carnil/stripe';
-import { Carnil } from '@carnil/core';
+import { StripeProvider } from "@carnil/stripe";
+import { Carnil } from "@carnil/core";
 
 // Register the Stripe provider
-Carnil.registerProvider('stripe', StripeProvider);
+Carnil.registerProvider("stripe", StripeProvider);
 
 // Initialize Carnil with Stripe
 const carnil = new Carnil({
   provider: {
-    provider: 'stripe',
-    apiKey: 'sk_test_...',
-    webhookSecret: 'whsec_...'
+    provider: "stripe",
+    apiKey: "sk_test_...",
+    webhookSecret: "whsec_...",
   },
-  debug: true
+  debug: true,
 });
 
 // Create a customer
 const customer = await carnil.createCustomer({
-  email: 'customer@example.com',
-  name: 'John Doe'
+  email: "customer@example.com",
+  name: "John Doe",
 });
 
 // Create a payment intent
 const paymentIntent = await carnil.createPaymentIntent({
   amount: 2000, // $20.00
-  currency: 'usd',
-  customerId: customer.data.id
+  currency: "usd",
+  customerId: customer.data.id,
 });
 ```
 
@@ -68,59 +68,101 @@ const paymentIntent = await carnil.createPaymentIntent({
 ```typescript
 class StripeProvider implements CarnilProvider {
   constructor(config: StripeConfig);
-  
+
   // Customer operations
   createCustomer(request: CreateCustomerRequest): Promise<Customer>;
   retrieveCustomer(request: RetrieveCustomerRequest): Promise<Customer>;
   updateCustomer(id: string, request: UpdateCustomerRequest): Promise<Customer>;
   deleteCustomer(id: string): Promise<void>;
   listCustomers(request?: CustomerListRequest): Promise<ListResponse<Customer>>;
-  
+
   // Payment method operations
-  listPaymentMethods(request: ListPaymentMethodsRequest): Promise<PaymentMethod[]>;
-  attachPaymentMethod(customerId: string, paymentMethodId: string): Promise<PaymentMethod>;
+  listPaymentMethods(
+    request: ListPaymentMethodsRequest
+  ): Promise<PaymentMethod[]>;
+  attachPaymentMethod(
+    customerId: string,
+    paymentMethodId: string
+  ): Promise<PaymentMethod>;
   detachPaymentMethod(paymentMethodId: string): Promise<void>;
-  setDefaultPaymentMethod(customerId: string, paymentMethodId: string): Promise<PaymentMethod>;
-  
+  setDefaultPaymentMethod(
+    customerId: string,
+    paymentMethodId: string
+  ): Promise<PaymentMethod>;
+
   // Payment intent operations
-  createPaymentIntent(request: CreatePaymentIntentRequest): Promise<PaymentIntent>;
+  createPaymentIntent(
+    request: CreatePaymentIntentRequest
+  ): Promise<PaymentIntent>;
   getPaymentIntent(id: string): Promise<PaymentIntent>;
-  updatePaymentIntent(id: string, updates: Partial<CreatePaymentIntentRequest>): Promise<PaymentIntent>;
+  updatePaymentIntent(
+    id: string,
+    updates: Partial<CreatePaymentIntentRequest>
+  ): Promise<PaymentIntent>;
   cancelPaymentIntent(id: string): Promise<PaymentIntent>;
-  confirmPaymentIntent(id: string, paymentMethodId?: string): Promise<PaymentIntent>;
+  confirmPaymentIntent(
+    id: string,
+    paymentMethodId?: string
+  ): Promise<PaymentIntent>;
   capturePaymentIntent(id: string, amount?: number): Promise<PaymentIntent>;
-  listPaymentIntents(request?: PaymentIntentListRequest): Promise<ListResponse<PaymentIntent>>;
-  
+  listPaymentIntents(
+    request?: PaymentIntentListRequest
+  ): Promise<ListResponse<PaymentIntent>>;
+
   // Subscription operations
   createSubscription(request: CreateSubscriptionRequest): Promise<Subscription>;
   getSubscription(id: string): Promise<Subscription>;
-  updateSubscription(id: string, updates: Partial<CreateSubscriptionRequest>): Promise<Subscription>;
+  updateSubscription(
+    id: string,
+    updates: Partial<CreateSubscriptionRequest>
+  ): Promise<Subscription>;
   cancelSubscription(id: string): Promise<Subscription>;
-  listSubscriptions(request?: SubscriptionListRequest): Promise<ListResponse<Subscription>>;
-  
+  listSubscriptions(
+    request?: SubscriptionListRequest
+  ): Promise<ListResponse<Subscription>>;
+
   // Invoice operations
   createInvoice(request: CreateInvoiceRequest): Promise<Invoice>;
   getInvoice(id: string): Promise<Invoice>;
-  updateInvoice(id: string, updates: Partial<CreateInvoiceRequest>): Promise<Invoice>;
+  updateInvoice(
+    id: string,
+    updates: Partial<CreateInvoiceRequest>
+  ): Promise<Invoice>;
   finalizeInvoice(id: string): Promise<Invoice>;
   payInvoice(id: string, paymentMethodId?: string): Promise<Invoice>;
   listInvoices(request?: InvoiceListRequest): Promise<ListResponse<Invoice>>;
-  
+
   // Refund operations
   createRefund(request: CreateRefundRequest): Promise<Refund>;
   getRefund(id: string): Promise<Refund>;
   listRefunds(request: ListRefundsRequest): Promise<Refund[]>;
-  
+
   // Webhook operations
-  verifyWebhook(payload: string, signature: string, secret: string): Promise<boolean>;
-  parseWebhook(payload: string, signature: string, secret: string): Promise<WebhookEvent>;
-  
+  verifyWebhook(
+    payload: string,
+    signature: string,
+    secret: string
+  ): Promise<boolean>;
+  parseWebhook(
+    payload: string,
+    signature: string,
+    secret: string
+  ): Promise<WebhookEvent>;
+
   // Analytics operations
   trackUsage(metrics: UsageMetrics): Promise<void>;
   trackAIUsage(metrics: AIUsageMetrics): Promise<void>;
-  getUsageMetrics(customerId: string, featureId: string, period: string): Promise<UsageMetrics[]>;
-  getAIUsageMetrics(customerId: string, modelId?: string, period?: string): Promise<AIUsageMetrics[]>;
-  
+  getUsageMetrics(
+    customerId: string,
+    featureId: string,
+    period: string
+  ): Promise<UsageMetrics[]>;
+  getAIUsageMetrics(
+    customerId: string,
+    modelId?: string,
+    period?: string
+  ): Promise<AIUsageMetrics[]>;
+
   // Health check
   healthCheck(): Promise<boolean>;
 }
@@ -160,47 +202,47 @@ STRIPE_PUBLISHABLE_KEY=pk_live_...
 ### Creating Customers
 
 ```typescript
-import { StripeProvider } from '@carnil/stripe';
+import { StripeProvider } from "@carnil/stripe";
 
 const stripeProvider = new StripeProvider({
-  apiKey: process.env.STRIPE_API_KEY!
+  apiKey: process.env.STRIPE_API_KEY!,
 });
 
 // Create a customer
 const customer = await stripeProvider.createCustomer({
-  email: 'customer@example.com',
-  name: 'John Doe',
+  email: "customer@example.com",
+  name: "John Doe",
   metadata: {
-    source: 'website',
-    plan: 'premium'
-  }
+    source: "website",
+    plan: "premium",
+  },
 });
 
-console.log('Customer created:', customer.id);
+console.log("Customer created:", customer.id);
 ```
 
 ### Managing Customers
 
 ```typescript
 // Get customer
-const customer = await stripeProvider.retrieveCustomer({ id: 'cus_123' });
+const customer = await stripeProvider.retrieveCustomer({ id: "cus_123" });
 
 // Update customer
-const updatedCustomer = await stripeProvider.updateCustomer('cus_123', {
-  name: 'Jane Doe',
+const updatedCustomer = await stripeProvider.updateCustomer("cus_123", {
+  name: "Jane Doe",
   metadata: {
-    plan: 'enterprise'
-  }
+    plan: "enterprise",
+  },
 });
 
 // List customers
 const customers = await stripeProvider.listCustomers({
   limit: 10,
-  email: 'customer@example.com'
+  email: "customer@example.com",
 });
 
 // Delete customer
-await stripeProvider.deleteCustomer('cus_123');
+await stripeProvider.deleteCustomer("cus_123");
 ```
 
 ## Payment Processing
@@ -211,38 +253,52 @@ await stripeProvider.deleteCustomer('cus_123');
 // Create payment intent
 const paymentIntent = await stripeProvider.createPaymentIntent({
   amount: 2000, // $20.00
-  currency: 'usd',
-  customerId: 'cus_123',
-  paymentMethodId: 'pm_123',
+  currency: "usd",
+  customerId: "cus_123",
+  paymentMethodId: "pm_123",
   metadata: {
-    orderId: 'order_123'
-  }
+    orderId: "order_123",
+  },
 });
 
 // Confirm payment intent
-const confirmedIntent = await stripeProvider.confirmPaymentIntent('pi_123', 'pm_123');
+const confirmedIntent = await stripeProvider.confirmPaymentIntent(
+  "pi_123",
+  "pm_123"
+);
 
 // Capture payment intent
-const capturedIntent = await stripeProvider.capturePaymentIntent('pi_123', 2000);
+const capturedIntent = await stripeProvider.capturePaymentIntent(
+  "pi_123",
+  2000
+);
 
 // Cancel payment intent
-const cancelledIntent = await stripeProvider.cancelPaymentIntent('pi_123');
+const cancelledIntent = await stripeProvider.cancelPaymentIntent("pi_123");
 ```
 
 ### Payment Methods
 
 ```typescript
 // List payment methods
-const paymentMethods = await stripeProvider.listPaymentMethods({ customerId: 'cus_123' });
+const paymentMethods = await stripeProvider.listPaymentMethods({
+  customerId: "cus_123",
+});
 
 // Attach payment method
-const paymentMethod = await stripeProvider.attachPaymentMethod('cus_123', 'pm_123');
+const paymentMethod = await stripeProvider.attachPaymentMethod(
+  "cus_123",
+  "pm_123"
+);
 
 // Set default payment method
-const defaultMethod = await stripeProvider.setDefaultPaymentMethod('cus_123', 'pm_123');
+const defaultMethod = await stripeProvider.setDefaultPaymentMethod(
+  "cus_123",
+  "pm_123"
+);
 
 // Detach payment method
-await stripeProvider.detachPaymentMethod('pm_123');
+await stripeProvider.detachPaymentMethod("pm_123");
 ```
 
 ## Subscriptions
@@ -252,38 +308,40 @@ await stripeProvider.detachPaymentMethod('pm_123');
 ```typescript
 // Create subscription
 const subscription = await stripeProvider.createSubscription({
-  customerId: 'cus_123',
-  priceId: 'price_123',
-  paymentMethodId: 'pm_123',
+  customerId: "cus_123",
+  priceId: "price_123",
+  paymentMethodId: "pm_123",
   metadata: {
-    plan: 'premium'
-  }
+    plan: "premium",
+  },
 });
 
-console.log('Subscription created:', subscription.id);
+console.log("Subscription created:", subscription.id);
 ```
 
 ### Managing Subscriptions
 
 ```typescript
 // Get subscription
-const subscription = await stripeProvider.getSubscription('sub_123');
+const subscription = await stripeProvider.getSubscription("sub_123");
 
 // Update subscription
-const updatedSubscription = await stripeProvider.updateSubscription('sub_123', {
-  priceId: 'price_456',
+const updatedSubscription = await stripeProvider.updateSubscription("sub_123", {
+  priceId: "price_456",
   metadata: {
-    plan: 'enterprise'
-  }
+    plan: "enterprise",
+  },
 });
 
 // Cancel subscription
-const cancelledSubscription = await stripeProvider.cancelSubscription('sub_123');
+const cancelledSubscription = await stripeProvider.cancelSubscription(
+  "sub_123"
+);
 
 // List subscriptions
 const subscriptions = await stripeProvider.listSubscriptions({
-  customerId: 'cus_123',
-  status: 'active'
+  customerId: "cus_123",
+  status: "active",
 });
 ```
 
@@ -294,28 +352,28 @@ const subscriptions = await stripeProvider.listSubscriptions({
 ```typescript
 // Create invoice
 const invoice = await stripeProvider.createInvoice({
-  customerId: 'cus_123',
+  customerId: "cus_123",
   items: [
     {
-      priceId: 'price_123',
-      quantity: 1
-    }
+      priceId: "price_123",
+      quantity: 1,
+    },
   ],
   metadata: {
-    orderId: 'order_123'
-  }
+    orderId: "order_123",
+  },
 });
 
 // Finalize invoice
-const finalizedInvoice = await stripeProvider.finalizeInvoice('in_123');
+const finalizedInvoice = await stripeProvider.finalizeInvoice("in_123");
 
 // Pay invoice
-const paidInvoice = await stripeProvider.payInvoice('in_123', 'pm_123');
+const paidInvoice = await stripeProvider.payInvoice("in_123", "pm_123");
 
 // List invoices
 const invoices = await stripeProvider.listInvoices({
-  customerId: 'cus_123',
-  status: 'paid'
+  customerId: "cus_123",
+  status: "paid",
 });
 ```
 
@@ -326,19 +384,19 @@ const invoices = await stripeProvider.listInvoices({
 ```typescript
 // Create refund
 const refund = await stripeProvider.createRefund({
-  paymentId: 'pi_123',
+  paymentId: "pi_123",
   amount: 1000, // $10.00
-  reason: 'requested_by_customer',
+  reason: "requested_by_customer",
   metadata: {
-    reason: 'defective_product'
-  }
+    reason: "defective_product",
+  },
 });
 
 // Get refund
-const refundDetails = await stripeProvider.getRefund('re_123');
+const refundDetails = await stripeProvider.getRefund("re_123");
 
 // List refunds
-const refunds = await stripeProvider.listRefunds({ paymentId: 'pi_123' });
+const refunds = await stripeProvider.listRefunds({ paymentId: "pi_123" });
 ```
 
 ## Webhooks
@@ -346,110 +404,133 @@ const refunds = await stripeProvider.listRefunds({ paymentId: 'pi_123' });
 ### Webhook Verification
 
 ```typescript
-import { StripeProvider } from '@carnil/stripe';
+import { StripeProvider } from "@carnil/stripe";
 
 const stripeProvider = new StripeProvider({
   apiKey: process.env.STRIPE_API_KEY!,
-  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!
+  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
 });
 
 // Verify webhook signature
 const isValid = await stripeProvider.verifyWebhook(payload, signature, secret);
 if (isValid) {
-  console.log('Webhook signature is valid');
+  console.log("Webhook signature is valid");
 }
 
 // Parse webhook payload
 const event = await stripeProvider.parseWebhook(payload, signature, secret);
-console.log('Webhook event:', event.type, event.data);
+console.log("Webhook event:", event.type, event.data);
 ```
 
 ### Express.js Webhook Handler
 
 ```typescript
-import express from 'express';
-import { StripeProvider } from '@carnil/stripe';
+import express from "express";
+import { StripeProvider } from "@carnil/stripe";
 
 const app = express();
 const stripeProvider = new StripeProvider({
   apiKey: process.env.STRIPE_API_KEY!,
-  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!
+  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
 });
 
-app.post('/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
-  try {
-    const signature = req.headers['stripe-signature'] as string;
-    const payload = req.body;
-    
-    // Verify webhook
-    const isValid = await stripeProvider.verifyWebhook(payload, signature, process.env.STRIPE_WEBHOOK_SECRET!);
-    if (!isValid) {
-      return res.status(400).json({ error: 'Invalid signature' });
+app.post(
+  "/webhooks/stripe",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    try {
+      const signature = req.headers["stripe-signature"] as string;
+      const payload = req.body;
+
+      // Verify webhook
+      const isValid = await stripeProvider.verifyWebhook(
+        payload,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+      if (!isValid) {
+        return res.status(400).json({ error: "Invalid signature" });
+      }
+
+      // Parse event
+      const event = await stripeProvider.parseWebhook(
+        payload,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+
+      // Handle event
+      switch (event.type) {
+        case "payment_intent.succeeded":
+          await handlePaymentSucceeded(event.data);
+          break;
+        case "payment_intent.payment_failed":
+          await handlePaymentFailed(event.data);
+          break;
+        case "customer.subscription.created":
+          await handleSubscriptionCreated(event.data);
+          break;
+        default:
+          console.log("Unhandled event type:", event.type);
+      }
+
+      res.status(200).json({ received: true });
+    } catch (error) {
+      console.error("Webhook error:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-    
-    // Parse event
-    const event = await stripeProvider.parseWebhook(payload, signature, process.env.STRIPE_WEBHOOK_SECRET!);
-    
-    // Handle event
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        await handlePaymentSucceeded(event.data);
-        break;
-      case 'payment_intent.payment_failed':
-        await handlePaymentFailed(event.data);
-        break;
-      case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data);
-        break;
-      default:
-        console.log('Unhandled event type:', event.type);
-    }
-    
-    res.status(200).json({ received: true });
-  } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-});
+);
 ```
 
 ### Next.js API Route
 
 ```typescript
 // pages/api/webhooks/stripe.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import { StripeProvider } from '@carnil/stripe';
+import { NextApiRequest, NextApiResponse } from "next";
+import { StripeProvider } from "@carnil/stripe";
 
 const stripeProvider = new StripeProvider({
   apiKey: process.env.STRIPE_API_KEY!,
-  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!
+  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const signature = req.headers['stripe-signature'] as string;
+    const signature = req.headers["stripe-signature"] as string;
     const payload = JSON.stringify(req.body);
-    
+
     // Verify webhook
-    const isValid = await stripeProvider.verifyWebhook(payload, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+    const isValid = await stripeProvider.verifyWebhook(
+      payload,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
     if (!isValid) {
-      return res.status(400).json({ error: 'Invalid signature' });
+      return res.status(400).json({ error: "Invalid signature" });
     }
-    
+
     // Parse event
-    const event = await stripeProvider.parseWebhook(payload, signature, process.env.STRIPE_WEBHOOK_SECRET!);
-    
+    const event = await stripeProvider.parseWebhook(
+      payload,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+
     // Handle event
     await handleWebhookEvent(event);
-    
+
     res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Webhook error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 ```
@@ -461,25 +542,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 ```typescript
 // Track usage
 await stripeProvider.trackUsage({
-  customerId: 'cus_123',
-  featureId: 'api_calls',
+  customerId: "cus_123",
+  featureId: "api_calls",
   usage: 100,
-  timestamp: new Date()
+  timestamp: new Date(),
 });
 
 // Track AI usage
 await stripeProvider.trackAIUsage({
-  customerId: 'cus_123',
-  modelId: 'gpt-4',
+  customerId: "cus_123",
+  modelId: "gpt-4",
   tokens: 1000,
-  cost: 0.02
+  cost: 0.02,
 });
 
 // Get usage metrics
-const metrics = await stripeProvider.getUsageMetrics('cus_123', 'api_calls', 'month');
+const metrics = await stripeProvider.getUsageMetrics(
+  "cus_123",
+  "api_calls",
+  "month"
+);
 
 // Get AI usage metrics
-const aiMetrics = await stripeProvider.getAIUsageMetrics('cus_123', 'gpt-4', 'month');
+const aiMetrics = await stripeProvider.getAIUsageMetrics(
+  "cus_123",
+  "gpt-4",
+  "month"
+);
 ```
 
 ## Error Handling
@@ -487,37 +576,37 @@ const aiMetrics = await stripeProvider.getAIUsageMetrics('cus_123', 'gpt-4', 'mo
 ### Stripe-Specific Errors
 
 ```typescript
-import { StripeProvider } from '@carnil/stripe';
-import { StripeError } from 'stripe';
+import { StripeProvider } from "@carnil/stripe";
+import { StripeError } from "stripe";
 
 try {
   const paymentIntent = await stripeProvider.createPaymentIntent({
     amount: 2000,
-    currency: 'usd'
+    currency: "usd",
   });
 } catch (error) {
   if (error instanceof StripeError) {
     switch (error.type) {
-      case 'card_error':
-        console.error('Card error:', error.message);
+      case "card_error":
+        console.error("Card error:", error.message);
         break;
-      case 'rate_limit_error':
-        console.error('Rate limit exceeded:', error.message);
+      case "rate_limit_error":
+        console.error("Rate limit exceeded:", error.message);
         break;
-      case 'invalid_request_error':
-        console.error('Invalid request:', error.message);
+      case "invalid_request_error":
+        console.error("Invalid request:", error.message);
         break;
-      case 'authentication_error':
-        console.error('Authentication failed:', error.message);
+      case "authentication_error":
+        console.error("Authentication failed:", error.message);
         break;
-      case 'api_connection_error':
-        console.error('API connection error:', error.message);
+      case "api_connection_error":
+        console.error("API connection error:", error.message);
         break;
-      case 'api_error':
-        console.error('API error:', error.message);
+      case "api_error":
+        console.error("API error:", error.message);
         break;
       default:
-        console.error('Unknown error:', error.message);
+        console.error("Unknown error:", error.message);
     }
   }
 }
@@ -530,15 +619,15 @@ try {
 ```typescript
 // Use test API key for testing
 const stripeProvider = new StripeProvider({
-  apiKey: 'sk_test_...',
-  webhookSecret: 'whsec_...'
+  apiKey: "sk_test_...",
+  webhookSecret: "whsec_...",
 });
 
 // Test payment intent creation
 const testPaymentIntent = await stripeProvider.createPaymentIntent({
   amount: 2000,
-  currency: 'usd',
-  paymentMethodId: 'pm_card_visa' // Test card
+  currency: "usd",
+  paymentMethodId: "pm_card_visa", // Test card
 });
 ```
 
@@ -547,20 +636,24 @@ const testPaymentIntent = await stripeProvider.createPaymentIntent({
 ```typescript
 // Test webhook verification
 const testPayload = JSON.stringify({
-  id: 'evt_test_webhook',
-  object: 'event',
-  type: 'payment_intent.succeeded',
+  id: "evt_test_webhook",
+  object: "event",
+  type: "payment_intent.succeeded",
   data: {
     object: {
-      id: 'pi_test_123',
+      id: "pi_test_123",
       amount: 2000,
-      currency: 'usd'
-    }
-  }
+      currency: "usd",
+    },
+  },
 });
 
-const testSignature = 't=1234567890,v1=test_signature';
-const isValid = await stripeProvider.verifyWebhook(testPayload, testSignature, 'whsec_test_...');
+const testSignature = "t=1234567890,v1=test_signature";
+const isValid = await stripeProvider.verifyWebhook(
+  testPayload,
+  testSignature,
+  "whsec_test_..."
+);
 ```
 
 ## Health Check
@@ -569,9 +662,9 @@ const isValid = await stripeProvider.verifyWebhook(testPayload, testSignature, '
 // Check Stripe API health
 const isHealthy = await stripeProvider.healthCheck();
 if (isHealthy) {
-  console.log('Stripe API is healthy');
+  console.log("Stripe API is healthy");
 } else {
-  console.log('Stripe API is not responding');
+  console.log("Stripe API is not responding");
 }
 ```
 
