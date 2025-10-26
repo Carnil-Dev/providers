@@ -1,6 +1,6 @@
 {
   "name": "@carnil/razorpay",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Razorpay provider for Carnil unified payments platform",
   "private": false,
   "main": "./dist/index.js",
