@@ -1,0 +1,56 @@
+{
+  "name": "@carnil/stripe",
+  "version": "0.2.0",
+  "description": "Stripe provider for Carnil unified payments platform",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "payments",
+    "stripe",
+    "sdk",
+    "typescript",
+    "carnil"
+  ],
+  "author": "Carnil Team <hello@carnil.dev> (https://carnil.dev)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Carnil-Dev/carnil-sdk.git",
+    "directory": "packages/stripe"
+  },
+  "bugs": {
+    "url": "https://github.com/Carnil-Dev/carnil-sdk/issues"
+  },
+  "homepage": "https://carnil.dev",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@carnil/core": "workspace:*",
+    "stripe": "^14.0.0"
+  },
+  "peerDependencies": {
+    "stripe": "^14.0.0"
+  }
+}
