@@ -39,6 +39,12 @@ jobs:
 
       - name: Version and Publish
         run: |
+          # Check if there are any changesets to process
+          if [ -z "$(find .changeset -name "*.md" -not -name "README.md" | head -1)" ]; then
+            echo "No changesets found, skipping version and publish"
+            exit 0
+          fi
+
           # Version packages based on changesets
           pnpm -w run version:patch
 
