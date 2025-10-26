@@ -37,30 +37,15 @@ jobs:
       - name: Run tests
         run: pnpm run test
 
-      - name: Bump version and publish
-        run: |
-          # Fetch the latest version from npm registry
-          LATEST_VERSION=$(npm view @carnil/core version 2>/dev/null || echo "0.0.0")
-          echo "Latest published version: $LATEST_VERSION"
-
-          # Update package.json to match the latest published version
-          npm version $LATEST_VERSION --no-git-tag-version --allow-same-version
-
-          # Bump to the next patch version
-          pnpm run version:patch
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "New version: $NEW_VERSION"
-
-          # Publish to npm
-          pnpm run release
-
-          # Commit and push the version bump
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add package.json pnpm-lock.yaml
-          git commit -m "chore: bump version to $NEW_VERSION"
-          git tag "v$NEW_VERSION"
-          git push origin main --tags
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: pnpm run release
+          version: pnpm run version:patch
+          commit: "chore: release packages"
+          title: "chore: release packages"
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
